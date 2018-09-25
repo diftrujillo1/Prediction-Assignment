@@ -28,7 +28,7 @@ suppressWarnings(suppressMessages(library(e1071)))
 
 Another important thing is that it is better to deal with no missing values inside the dataset, so it's important to drop every variable in the dataset that has missing values. When droping variables, new training dataset came with 57 variables, instead of 160 and testing dataset with 60 variables instead of 160.
 
-```{r, cache = T}
+```{r}
 train_set <- read.csv('pml-training.csv', na.strings = c('#DIV/0!', 'NA', ''))
 train_set <- train_set[,colSums(is.na(train_set)) == 0]
 
@@ -38,7 +38,7 @@ test_set <- test_set[,colSums(is.na(test_set)) == 0]
 
 There are some variables that I consider as non-predictors variables, this are ids or variables time that are dropped from the _trainin\_set_. This variables are: _index_, _user\_name_, _time\_stamp_, _new\_window_ and _num\_window_. One can use the grepl function if one knows before that these variables doesn't give any extra information to the training model.
 
-```{r, cache = T}
+```{r}
 train   <- train_set[,-c(1:7)]
 test   <- test_set[,-c(1:7)]
 ```
@@ -49,7 +49,7 @@ Now, the cleaned training data set contains 19622 observations and 53 variables,
 
 I created a Data Partition with the train dataset after cleansing it. Partitioning it with 70% for training test and 30% for the testing test. This testing set is different from the one loaded before. The testing set from Data Partition is for the Cross Validation section. The other one is for predicting the results of the quiz. 
 
-````{r}
+```{r}
 data_train <- createDataPartition(train$classe, p = 0.7, list = FALSE)
 subset_train <- train[data_train,]
 subset_test <- train[-data_train,]
@@ -71,7 +71,7 @@ prediction <- predict(model, subset_test)
 confusionMatrix(subset_test$classe, prediction)
 ```
 
-The model gives us an accuracy of `r postResample(prediction, subset_test$classe)[1]` or `r paste0(round(postResample(prediction, subset_test$classe)[1] * 100, 2), '%')` and an estimated out-of-sample of `r 1 - as.numeric(confusionMatrix(subset_test$classe, prediction)$overall[1])` or `r paste0(round(1 - as.numeric(confusionMatrix(subset_test$classe, prediction)$overall[1]) * 100, 2), '%')`. Which is very good.
+The model gives us an accuracy of `r postResample(prediction, subset_test$classe)[1]` or `r paste0(round(postResample(prediction, subset_test$classe)[1] * 100, 2), '%')` and an estimated out-of-sample of `r 1 - as.numeric(confusionMatrix(subset_test$classe, prediction)$overall[1])` or `r paste0(round((1 - as.numeric(confusionMatrix(subset_test$classe, prediction)$overall[1])) * 100, 2), '%')`. Which is very good.
 
 
 #### Predicting Quiz set
